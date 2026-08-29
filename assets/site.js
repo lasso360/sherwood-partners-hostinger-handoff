@@ -49,15 +49,18 @@ document.querySelectorAll('.carousel-wrap').forEach((wrap) => {
   updateState();
 });
 
-// Contact form — sends automatically, no visitor action required (per
-// Gabe, 2026-08-25: the earlier mailto: version needed the visitor to
-// manually hit send in their own mail client, which isn't reliable
-// enough). POSTs to /api/contact, a Cloudflare Function that both sends a
-// real email to Joshua.Pichinson@sherwoodea.com via Resend AND saves an
-// independent record to KV storage (kept as a safety net even if the
-// email send ever fails — view records at /leads/, password-gated).
-// Temporary setup — goes away once the site moves to EisnerAmper's own
-// hosting/CRM.
+// Contact form handler.
+//
+// Submits the form via POST to `/api/contact` as JSON, with the fields
+// `name`, `email` and `message`. It expects a JSON response of the shape
+// { ok: boolean, email_sent: boolean } and updates #form-status
+// accordingly.
+//
+// NOTE FOR DEPLOYMENT: the `/api/contact` endpoint is NOT included in this
+// package — it ran on the site's previous hosting. Until a replacement is
+// wired up, this form will POST to a URL that does not exist and show the
+// fallback error message. Either point the fetch() below at your own form
+// handler, or replace this form with an embedded form from your CRM.
 const contactForm = document.getElementById('contact-form');
 if (contactForm) {
   const status = document.getElementById('form-status');
